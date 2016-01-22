@@ -5,6 +5,7 @@
 * [git stash](#git_stash)
 * [git fetch](#git_fetch)
 * [git rebase](#git_rebase)
+* [git branch](#git_branch)
 
 <a name="git_push"/>
 ### git push ([返回目录](#catalog))
@@ -153,4 +154,35 @@
 
 **rebase 的过程中出现冲突怎么办？**
 >应用 <font color="red">**补丁(patch)**</font> 的过程中出现冲突是很正常的，这时候 git 会停止 rebase，提示你有冲突需要解决（解决这类冲突与解决其他冲突完全一样），解决完冲突之后无需自己 commit，而是调用以下命令让 git 继续 rebase：<br/>
-> <font color="red">**git rebase --continue**</font> 
+> <font color="red">**git rebase --continue**</font>
+
+<a name="git_branch"/>
+### git branch([返回目录](#catalog))
+
+> 列出本地已经存在的分支，并在当前分支前加 “*” 号标记
+
+	# git branch
+
+> 列出远程分支
+
+	# git branch -r
+
+> 列出本地分支和远程分支
+
+	# git branch -a
+
+> 创建一个新的本地分支，但不切换至新分支
+
+	# git branch order_rebase
+
+> 重命名分支
+
+	# git branch -m oldName newName
+
+> 删除分支
+
+	# git branch -d | -D branchName
+
+> 切换分支
+
+	# git checkout branchName
