@@ -11,7 +11,7 @@
 
 如果指定的是 resultType，那么只能通过自动映射来封装查询结果(因为我们没有地方可以再手动指定映射关系)，这种情况下关闭自动映射，将导致 MyBatis 始终返回 null，即使能查询到结果。
 
-对于指定 resultType 的情形，我们只能通过 `autoMappingBehavior` 全局设置来关闭自动映射(注意：这种设置对指定 resultMap 的情形同样适用)，并且在这种情形下，`PARTIAL` 和 `FULL` 的作用是相同的。
+对于指定 resultType 的情形，我们只能通过 `autoMappingBehavior` 全局设置来关闭自动映射(注意：这种设置对指定 resultMap 的情形同样适用)，并且在这种情形下，`PARTIAL` 和 `FULL` 的效果是相同的(因为不存在嵌套结果集的情况)。
 
     <settings>
         <setting name="autoMappingBehavior" value="NONE|PARTIAL|FULL"/>
@@ -84,11 +84,11 @@ Java 文件：
 
 Blog 类中有一个 Author 类型的属性，在 Blog 对应的 resultMap 中使用 association 关联了该属性，并为其指定了 Author 对应的 resultMap，这就是使用嵌套结果来进行关联查询。
 
-我们知道通过 blogRsult 来组装 Blog 对象时，会触发自动装配，能够自动装配 id 列与 Blog.id 属性；在通过 authorResult 来组装 Author 对象时，也应该触发自动装配，这个自动装配是否触发完全有自动映射级别决定：`PARTIAL` 级别不会触发，而 `FULL` 级别会触发。
+我们知道通过 blogRsult 来组装 Blog 对象时，会触发自动装配，能够自动装配 id 列与 Blog.id 属性；在通过 authorResult 来组装 Author 对象时，也应该触发自动装配，这个自动装配是否触发完全由自动映射级别决定：`PARTIAL` 级别不会触发，而 `FULL` 级别会触发。
 
 `PARTIAL` 级别不会触发导致的结果是 Author.id 为 null，这是正确的，因为我们根本就没有查 Author 的 id。
 
-而 `FULL` 级别会触发导致的结果是把 B.id 列的值赋给 Author.id 属性，这就完全不对了。
+而 `FULL` 级别会触发导致的结果是把 B.id 对应列的值赋给 Author.id 属性，这就完全不对了。
 
 所以必须谨慎的使用 `FULL` 级别！！
 
@@ -98,3 +98,16 @@ Blog 类中有一个 Author 类型的属性，在 Blog 对应的 resultMap 中�
 2. 如果所有列都无法映射到某个属性, 那么 MyBatis 将返回 null，即使能查询到记录
 3. 自动映射在查找同名的列与属性时，忽略大小写
 4. 先执行自动映射(如果开启了的话)，再执行手动映射(如果有的话)，如果某些属性既有自动映射又有手动映射，那么后者将覆盖前者
+
+### 经典数据库命名规范与经典 Java 命名规范如何自动映射？
+经典数据库命名规范是指：数据库列使用大写单词命名，单词间用下划线分隔。
+
+经典 Java 命名规范是指：Java属性一般遵循驼峰命名法，即除第一个单词的首字母小写外，其余单词的首字母都大写。
+
+MyBatis 也为这两种命名规范之间的自动映射提供了支持，只需在配置文件中配置 `mapUnderscoreToCamelCase` 参数即可：
+
+	<settings>
+        <setting name="mapUnderscoreToCamelCase" value="true|false"/>
+    </settings>
+
+`true` 表示开启，`false` 表示关闭，默认值是 `false`。
